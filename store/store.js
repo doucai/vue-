@@ -6,15 +6,28 @@ const state = {
     num:1
 };
 const mutations= {
-    add(state){
-        state.num="woshivuex"
+    add(state,n){
+        state.num+=n
     },
     reduce(state){
-        state.num="我是vuex"
+        state.num--
+    }
+}
+const getters= {
+    num:function(state){
+        return state.num+=50
+    }
+}
+const actions= {
+    addAc(context){
+        context.commit('add',1)
     }
 }
 
+
 export default new Vuex.Store({
     state,
-    mutations
+    mutations,
+    getters,
+    actions
 })

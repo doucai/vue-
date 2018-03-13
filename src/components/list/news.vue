@@ -1,20 +1,30 @@
 <template>
   <div>
       <list></list>
-      <p>{{$store.state.num}}</p>
-      <button @click="$store.commit('add')">add</button>
-      <button @click="$store.commit('reduce')">reduce</button>
+      <p>{{num}}</p>
+      <button @click="$store.commit('add',10)">add</button>
+      <button @click="reduce">reduce</button>
+      <button @click="addAc">addAc</button>
   </div>
 </template>
 
 <script>
 import list from "./list";
 import store from "../../../store/store";
+import {mapState, mapMutations, mapGetters, mapActions} from "vuex";
 export default {
     components: {
         list
     },
-    store
+    store,
+    computed:{
+        ...mapState(['num']),
+    },
+    methods: {
+        ...mapMutations(['add','reduce']),
+        ...mapGetters(['num']),
+        ...mapActions(['addAc'])
+    }
 }
 </script>
 
