@@ -2,18 +2,18 @@
    <div>   
        
         <div class="wrapper" ref="wrapper">
-            
             <ul class="contents">
                  <div class="top-tip">
                     <span class="refresh-hook">下拉刷新</span>
                 </div>
-                <li v-for="info in apple" >
+                <li v-for="info in data" >
                 <router-link :to=info.url>
                     <span>{{info.title}}</span>
                     <img :src=info.imageUrls alt="图片没加载出来">
                 </router-link>
                 </li>
             </ul>  
+            <div class="loading-wraper"></div>
         </div>
         <p class="next" @click="next">
             <span data-index="1">1</span>
@@ -21,7 +21,6 @@
             <span data-index="3">3</span>
             <span data-index="4">4</span>
             <span data-index="5">5</span>
-            
         </p>
        
    </div>
@@ -33,7 +32,7 @@ import BScroll from "better-scroll";
 export default {
     data () {
         return {
-        apple: [],
+        data: [],
         imgurl:[],
         num:1,
         bottomStatus:'',
@@ -41,11 +40,19 @@ export default {
         }
     },
     created () {
-      
          this.loadData(this.num) 
+        
     },
-    
+    mounted () {
+        // this.scroll.on("pullingUp",()=>{
+        //     setTimeout(()=>{
+        //         this.num++;
+        //         this.loadData(this.num)
+        //     },1000)
+        // })  
+    },
     methods: {
+       
         next(e){
             if (e.target.nodeName.toLowerCase() === 'span') {
             const index = parseInt(e.target.dataset.index)
@@ -54,25 +61,26 @@ export default {
           }
         },
         loadData(num) {
-         var dataurl="api/news/qihoo?kw=%E7%99%BD&site=qq.com&pageToken="+num+"&apikey=wrZMRq19dzqk4nsQppW8DFjq9NE5FabrEHpEVMUIHWUUtCWgWItMNY7Zto6Cecpm";
+             var that =this;
+            var dataurl="api/news/qihoo?kw=%E7%99%BD&site=qq.com&pageToken="+num+"&apikey=wrZMRq19dzqk4nsQppW8DFjq9NE5FabrEHpEVMUIHWUUtCWgWItMNY7Zto6Cecpm";
             this.$http.get(dataurl).then((res)=>{
             if(res.status){
-                //console.log(res.data.data)
-                this.apple=res.data.data;
+                console.log(res.data.data)
+                this.data=res.data.data.concat(this.data);
+               
                 //console.log(this.apple);
                 this.$nextTick(() => {
                     if(!this.scroll){
                         this.scroll = new BScroll(this.$refs.wrapper, {
-                            click:true
+                            click:true,
                         });
-                        this.scroll.on('touchend',(pos)=>{
-                            //下拉
-                            if(pos.y>30){
-                              alert(1)  
-                            this.num++
-                            this.loadData(this.num)
+                        this.scroll.on("touchend",(pos)=>{
+                            if(pos>50){
+                                this.num++
+                                alert( that.num+pos)
+                                that.loadData(this.num)
                             }
-                        })
+                        });
                     }else{
                         this.scroll.refresh
                     }
@@ -84,7 +92,7 @@ export default {
                 console.log("网络错误"+req)
             })
         },
-       
+     
     }
 }
 </script>
